@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+
+set -e
+
+main() {
+  validate_current_git_config
+
+  echo "Running tests..."
+  if ruby string-calculator/test/calculator_test.rb;
+  then
+    echo
+    echo
+    echo "Great job, the tests are passing."
+  else
+    echo
+    echo
+    echo "Sorry, the tests are still failing."
+    echo "To encourage you to take small steps, we're going to delete the code you wrote."
+
+    git_revert_and_try_again
+    exit 1
+  fi
+
+  write_a_new_commit
+  sleep 1
+
+  cherry_pick_next_testcase
+  sleep 1
+
+  echo
+  echo "Running the tests again to ensure they fail..."
+  if ruby string-calculator/test/calculator_test.rb;
+  then
+    whoops_wrote_too_much_code_git_revert
+    exit 1
+  fi
+
+  echo
+  echo
+  echo "Okay, as expected the tests are failing. This is good, this shows us exactly what we should go do next."
+  echo "Take a look at the new test case in string-calculator/test/calculator_test.rb"
+  echo
+  echo "... and when you're ready, let's write the simplest code we can to make this pass."
+}
+
+write_a_new_commit() {
+  git add .
+
+  if git diff --staged --exit-code >/dev/null
+  then
+    return
+  fi
+
+  echo "Let's write a commit so you don't lose this work."
+  sleep 1.8
+  echo
+  echo
+
+  git commit 2> /dev/null
+  echo
+  echo
+}
+
+whoops_wrote_too_much_code_git_revert() {
+  echo
+  echo
+  echo "uh oh. The next test case already passes. This is a problem because each new test case should fail, indicating what we should do next."
+  echo "It seems as though you wrote too much code for the previous test. It's normal to anticipate what's coming next, and it can be hard to hold yourself back."
+  echo "However, the goal of TDD is to write ONLY the code you need for one test at a time. Once that test passes, we can always write another."
+
+  echo
+  echo
+  echo "Reminder : the goal of this exercise is to write JUST enough code to make one test at a time pass"
+  echo "We write the simplest code we can at each step so we don't get off track, and to ensure our implementation is covered by the tests we wrote"
+  echo
+
+  sleep 3
+  echo "Let's revert the commit we just wrote. We can try again, but this time, focus on writing the __simplest__ code we can to pass the test"
+  git reset HEAD~2 --hard >/dev/null
+
+  TEST_CASE=$(git config --get tdd.current-test-case)
+  ((TEST_CASE--))
+  git config tdd.current-test-case "$TEST_CASE"
+}
+
+cherry_pick_next_testcase () {
+  echo "Creating the next unit test..."
+
+  TEST_CASE=$(git config --get tdd.current-test-case)
+  ((TEST_CASE++))
+
+  if [ "$TEST_CASE" -eq 11 ]
+  then
+    echo "Good job, you made it to the end"
+    exit 0
+  fi
+
+  git cherry-pick "test-case-$TEST_CASE"
+  git config tdd.current-test-case "$TEST_CASE"
+}
+
+git_revert_and_try_again() {
+  echo "Running git reset --hard"
+  git add . > /dev/null
+  git reset --hard > /dev/null
+  sleep 1
+
+  echo
+  echo
+  echo "Try not to be discouraged. Failure is a part of the process. What can you learn from the mistake ?"
+  echo "When you're ready, read the test again, write the __simplest__ code you can, and run the tests again"
+}
+
+validate_current_git_config() {
+  TEST_CASE=$(git config --get tdd.current-test-case)
+
+  if [ -z "$TEST_CASE" ]
+  then
+    echo "Error : cannot determine the current test case"
+    echo "Something strange may have happened to your git repo"
+    echo "To resolve this, run ./script/start or re-download the repository"
+
+    exit 9
+  fi
+}
+
+main

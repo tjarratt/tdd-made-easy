@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e
+
+main() {
+  echo "Resetting to a known-good starting point..."
+  echo
+
+  git config --unset tdd.current-test-case || true
+
+  git checkout main &> /dev/null
+  git reset known-good-starting-point --hard &> /dev/null
+
+  echo "Done. Now run ./scripts/start if you want to start over"
+}
+
+main

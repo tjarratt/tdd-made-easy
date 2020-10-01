@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -e
+
+main() {
+  verify_installation_of "git"
+  verify_installation_of "ruby"
+  verify_not_started
+
+  git cherry-pick test-case-1 >&/dev/null
+  git config tdd.current-test-case 1
+
+  echo "Hello, and welcome to TDD Made Easy"
+  echo "This tool will help you practice writing simple, testable software and iteratively build complex systems."
+  echo "Our first goal is to get used to fast feedback loops. When doing TDD, we ideally want to run our tests every minute, or even more frequently."
+  echo
+
+  echo "To start, we've created a single test for a string calculator. Given input in the form \"1,2,3,4\" it will return their sum as an integer."
+  echo
+
+  echo "Take a look at the first test case in string-calculator/test/calculator_test.rb"
+  echo "Your goal is to write the simplest code possible to make this one test pass."
+
+  echo "Once you think the test should pass, run ./scripts/run-tests and we'll see what happens."
+}
+
+verify_installation_of() {
+  if ! command -v "$1" &>/dev/null
+  then
+    echo "Whoopsie, it looks like you don't have $1 installed."
+    echo "Please install $1 and ensure it is on your shell's \$PATH"
+    exit 1
+  fi
+}
+
+verify_not_started() {
+  TEST_CASE=$(git config --get tdd.current-test-case || true)
+  if [ -z "$TEST_CASE" ]
+  then
+    return
+  fi
+
+  echo "Looks like you've already started once before."
+  echo
+  echo "Tip :     scripts/restart if you want to start over from scratch"
+  echo "Warning : scripts/restart WILL rewrite your git history"
+  exit 1
+}
+
+main
