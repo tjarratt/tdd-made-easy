@@ -34,4 +34,8 @@ class CalculatorTest < Minitest::Test
 
     assert_equal "negatives not allowed (-1, -2, -3)", exception.message
   end
+
+  def test_ignores_large_numbers
+    assert_equal 2, Calculator::add("1000,2")
+  end
 end
