@@ -18,4 +18,8 @@ class CalculatorTest < Minitest::Test
   def test_sum_of_many_comma_separated_numbers
     assert_equal 55, Calculator::add("1,2,3,4,5,6,7,8,9,10")
   end
+
+  def test_sum_of_values_separated_by_newline
+    assert_equal 6, Calculator::add("1\n2,3")
+  end
 end
