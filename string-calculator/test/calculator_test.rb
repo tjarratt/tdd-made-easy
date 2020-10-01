@@ -26,4 +26,12 @@ class CalculatorTest < Minitest::Test
   def test_users_can_define_their_own_delimiter
     assert_equal 7, Calculator::add("//;\n1;2;4;")
   end
+
+  def test_throws_when_provided_negative_numbers
+    exception = assert_raises(Calculator::InvalidInputException) do
+      Calculator::add("-1,-2,-3")
+    end
+
+    assert_equal "negatives not allowed (-1, -2, -3)", exception.message
+  end
 end
