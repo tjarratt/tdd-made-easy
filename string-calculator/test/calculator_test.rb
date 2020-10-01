@@ -10,4 +10,8 @@ class CalculatorTest < Minitest::Test
   def test_single_number_equals_itself
     assert_equal 1, Calculator::add("1")
   end
+
+  def test_sum_of_two_numbers
+    assert_equal 3, Calculator::add("1,2")
+  end
 end
