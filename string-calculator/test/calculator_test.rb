@@ -22,4 +22,8 @@ class CalculatorTest < Minitest::Test
   def test_sum_of_values_separated_by_newline
     assert_equal 6, Calculator::add("1\n2,3")
   end
+
+  def test_users_can_define_their_own_delimiter
+    assert_equal 7, Calculator::add("//;\n1;2;4;")
+  end
 end
