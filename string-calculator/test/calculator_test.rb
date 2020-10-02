@@ -25,6 +25,7 @@ class CalculatorTest < Minitest::Test
 
   def test_users_can_define_their_own_delimiter
     assert_equal 7, Calculator::add("//;\n1;2;4;")
+    assert_equal 7, Calculator::add("//[\n1[2[4[")
   end
 
   def test_throws_when_provided_negative_numbers
@@ -41,5 +42,9 @@ class CalculatorTest < Minitest::Test
 
   def test_ignores_all_large_numbers
     assert_equal 999, Calculator::add("1000, 1001, 999")
+  end
+
+  def test_long_delimiters
+    assert_equal 6, Calculator::add("//[***]\n1***2***3")
   end
 end
