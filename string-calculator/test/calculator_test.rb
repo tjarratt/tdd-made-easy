@@ -38,4 +38,8 @@ class CalculatorTest < Minitest::Test
   def test_ignores_large_numbers
     assert_equal 2, Calculator::add("1000,2")
   end
+
+  def test_ignores_all_large_numbers
+    assert_equal 999, Calculator::add("1000, 1001, 999")
+  end
 end
