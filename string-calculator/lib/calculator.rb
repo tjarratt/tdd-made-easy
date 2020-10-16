@@ -7,6 +7,7 @@ module Calculator
       .split(iterator)
       .map(&:to_i)
       .tap {|input| validate_non_negative(input) }
+      .filter {|input| input != 1000 }
       .inject(:+)
   end
 
