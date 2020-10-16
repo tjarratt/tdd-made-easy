@@ -2,10 +2,34 @@ module Calculator
   def self.add(args)
     return 0 if args.empty?
 
-    if args.start_with?("//")
-      return args.split(args[2]).map(&:to_i).inject(:+)
+    iterator = iterator_from(args)
+    args
+      .split(iterator)
+      .map(&:to_i)
+      .tap {|input| validate_non_negative(input) }
+      .inject(:+)
+  end
+
+  def self.iterator_from(args)
+    return args[2] if args.start_with?("//")
+
+    return /[,\n]/
+  end
+
+  def self.validate_non_negative(input)
+    invalid = input.filter { |i| i < 0 }
+    return if invalid.empty?
+
+    raise InvalidInputException.new(invalid)
+  end
+
+  class InvalidInputException < Exception
+    def initialize(input)
+      @input = input
     end
 
-    args.split(/[,\n]/).map(&:to_i).inject(:+)
+    def message
+      "negatives not allowed (#{@input.join(', ')})"
+    end
   end
 end
